@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 490" role="img" aria-label="Bandeira do Brasil">
+  <defs><linearGradient id="silk" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".35"/><stop offset=".35" stop-color="#fff" stop-opacity="0"/><stop offset=".65" stop-color="#000" stop-opacity=".15"/><stop offset="1" stop-color="#fff" stop-opacity=".1"/></linearGradient><clipPath id="sphere"><circle cx="350" cy="245" r="122.5"/></clipPath><path id="motto" d="M231 217 Q347 191 462 274"/></defs>
+  <path fill="#009b3a" d="M0 0h700v490H0z"/>
+  <path fill="#ffdf00" d="M350 42 658 245 350 448 42 245Z"/>
+  <circle cx="350" cy="245" r="122.5" fill="#002776"/>
+  <path d="M225 212Q350 181 473 269" fill="none" stroke="#fff" stroke-width="25" clip-path="url(#sphere)"/>
+  <text fill="#00852e" font-family="Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="2"><textPath href="#motto" startOffset="10%">ORDEM E PROGRESSO</textPath></text>
+  <g fill="#fff" font-family="Arial,sans-serif" font-size="13" text-anchor="middle"><text x="382" y="191">★</text><text x="257" y="253">★</text><text x="292" y="282">★</text><text x="335" y="262">★</text><text x="356" y="288">★</text><text x="374" y="260">★</text><text x="401" y="292">★</text><text x="426" y="285">★</text><text x="280" y="307">★</text><text x="321" y="312">★</text><text x="347" y="320">★</text><text x="375" y="319">★</text><text x="397" y="326">★</text><text x="417" y="315">★</text><text x="304" y="333">★</text><text x="329" y="346">★</text><text x="350" y="352">★</text><text x="370" y="340">★</text><text x="389" y="346">★</text></g>
+  <g fill="#fff" font-family="Arial,sans-serif" font-size="8" text-anchor="middle"><text x="271" y="275">★</text><text x="304" y="269">★</text><text x="322" y="292">★</text><text x="341" y="302">★</text><text x="363" y="302">★</text><text x="390" y="307">★</text><text x="437" y="299">★</text><text x="350" y="334">★</text></g>
+  <path fill="url(#silk)" d="M0 0h700v490H0z"/>
+</svg>

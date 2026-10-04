@@ -10,7 +10,9 @@ Fotos, partido, número, votos, % de votos válidos, % de seções totalizadas, 
 
 100% estático (HTML + CSS + JavaScript puro, sem dependências). Roda no **GitHub Pages**.
 
-Os gráficos abaixo dos painéis mostram **Presidente por UF (26 estados e DF)**, com os três mais votados, e **Governador e Senador no estado inteiro do RJ**, com todos os candidatos. Exibem votos, percentuais, contagem de seções totalizadas, horário e link do arquivo oficial. É possível filtrar por estado e ordenar pelo avanço da apuração.
+Os gráficos abaixo dos painéis mostram **Presidente por UF (26 estados e DF)**, com os três mais votados, e **Governador e Senador no estado inteiro do RJ**, com todos os candidatos. Exibem votos, percentuais, contagem de seções totalizadas, horário e link do arquivo oficial. É possível filtrar por região (Norte, Nordeste, Centro-Oeste, Sudeste e Sul), filtrar por estado e ordenar pelo avanço da apuração. O seletor de estado acompanha a região escolhida; um estado incompatível é redefinido para todas as UFs da nova região.
+
+Quando um arquivo nacional oficial válido identificar **Flávio Bolsonaro, número 22, como eleito Presidente** (`e: "s"` ou situação oficial "Eleito"), o site abre a celebração: "BRASIL" com fogos durante seis segundos, seguida da bandeira e da frase fixa "Brasil acima de tudo, Deus acima de todos". O visual usa a imagem de referência fornecida como fundo. A liderança, resultados estaduais e cache local não acionam o efeito. A frase permanece até o visitante voltar à apuração; consultas repetidas não reiniciam a animação. A preferência por movimento reduzido exibe diretamente a frase. Uma correção oficial que retire a condição de eleito fecha a celebração.
 
 Os 27 arquivos estaduais para Presidente usam o mesmo leiaute EA20, por exemplo `dados/rj/rj-c0001-e006257-u.json`. Os gráficos estaduais consultam o TSE a cada minuto, com no máximo quatro conexões simultâneas, cache local do último dado oficial válido, rejeição de arquivos antigos e espera de cinco minutos após 404. Os gráficos do RJ reutilizam as consultas dos painéis, sem chamadas adicionais. Cada local pode ter um horário de atualização diferente. Seções totalizadas são o indicador oficial de avanço; não representam endereços individuais de urnas.
 
@@ -83,6 +85,7 @@ js/core.js     utilitários + localStorage resiliente
 js/tse.js      URLs, download, validação e modelo oficial
 js/ui.js       renderização incremental, animações, gráfico
 js/territory.js gráficos oficiais por UF e estado do RJ
+js/victory.js   celebração após confirmação oficial de vitória
 js/app.js      ciclo de consulta, estado, tolerância a falhas
 worker/cloudflare-worker.js  proxy/cache opcional
 ```
@@ -90,6 +93,8 @@ worker/cloudflare-worker.js  proxy/cache opcional
 ## Verificação antes de publicar
 
 Com Playwright instalado, execute `node tests/browser.cjs` (ou defina `PLAYWRIGHT_MODULE` com o caminho do pacote). O teste baixa os 30 arquivos reais do TSE, compara as seções e líderes de todas as UFs, confere todos os candidatos das duas disputas do RJ, filtros, ordenação, atualização automática e manual, layout em 1440/390/320 px, cache offline, rejeição de arquivos inválidos/antigos e espera após 404. Ao final, verifica também as conexões diretas ao TSE no navegador, sem interceptação. As capturas ficam na pasta temporária do sistema. Os arquivos oficiais usados nos testes não são incluídos no site.
+
+`node tests/victory.cjs` verifica o gatilho e a apresentação da celebração. Os cenários de vitória, segundo turno e correção são isolados no navegador de teste; os resultados do site publicado continuam sendo lidos exclusivamente do TSE.
 
 ## Aviso
 

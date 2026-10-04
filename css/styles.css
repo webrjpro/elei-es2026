@@ -435,6 +435,33 @@ a:hover { color: #b9d1ff; }
 
 /* ------------------------------------------------------------- Footer */
 
+/* Celebração de vitória: abre apenas após confirmação oficial nacional. */
+body.has-victory { overflow: hidden; }
+.victory { position: fixed; inset: 0; margin: 0; padding: 0; border: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; color: #fff; background: #020b07; overflow: hidden; }
+.victory[open] { display: grid; place-items: center; }
+.victory::backdrop { background: #020b07; }
+.victory__scene { position: absolute; inset: -24px; background: linear-gradient(rgba(0, 17, 9, .74), rgba(0, 8, 15, .85)), url('../assets/celebracao-brasil.png') center / cover; filter: blur(10px); opacity: .85; }
+.victory::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 35%, rgba(0, 180, 75, .2), transparent 65%), radial-gradient(ellipse at 50% 75%, rgba(255, 213, 0, .12), transparent 60%); }
+.victory__fireworks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.victory__content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: min(1200px, 94vw); padding: 70px 12px 95px; }
+.victory__flag { display: block; width: clamp(150px, 21vw, 310px); height: auto; border-radius: 4px; margin-bottom: 24px; box-shadow: 0 0 65px rgba(0, 230, 97, .25), 0 15px 40px #0008; transform-origin: 10% 50%; animation: victory-flag 3s ease-in-out infinite; }
+.victory__brasil { margin: 0; font-size: clamp(72px, 17vw, 245px); font-weight: 900; letter-spacing: -.055em; line-height: 1.05; color: #ffdf00; background: linear-gradient(170deg, #c0ff7b 5%, #00b747 28%, #008b35 38%, #fff39a 44%, #ffdf00 56%, #d7a200 67%, #faffd0 72%, #00a744 86%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 3px 0 #a57e00) drop-shadow(0 8px 0 #00491b) drop-shadow(0 12px 18px #000); animation: victory-arrive 1.3s cubic-bezier(.2,.8,.2,1) both, victory-glow 2s ease-in-out infinite alternate; }
+.victory__slogan { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(32px, 5.8vw, 84px); font-weight: 800; line-height: 1.13; letter-spacing: -.035em; text-wrap: balance; filter: drop-shadow(0 3px 0 #5b5000) drop-shadow(0 8px 15px #000); animation: victory-arrive 1s ease-out both; }
+.victory__line { display: block; color: #ffdf00; }
+.victory__line--green { background: linear-gradient(175deg, #d1ffac 0%, #22e369 28%, #008c36 45%, #ffed75 51%, #ffe000 68%, #20c24d 95%); }
+.victory__line--gold { background: linear-gradient(175deg, #fffccd 3%, #ffdf00 33%, #b68a00 47%, #fff7ad 52%, #ffdf00 67%, #55e36c 98%); }
+.victory__line--green, .victory__line--gold { background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.victory__official { position: fixed; bottom: max(24px, env(safe-area-inset-bottom)); left: 20px; right: 20px; margin: 0; color: #c8dfd0; font: 12px/1.7 var(--font); letter-spacing: .02em; }
+.victory__close { position: fixed; z-index: 3; top: max(20px, env(safe-area-inset-top)); right: max(20px, env(safe-area-inset-right)); padding: 10px 16px; border: 1px solid #ffffff40; border-radius: 99px; background: #07160dcc; color: #e9ffef; font: 600 12px var(--font); cursor: pointer; }
+.victory__close:hover { background: #18442b; border-color: #ffdf00; }
+.victory__close:focus-visible { outline: 2px solid #ffdf00; outline-offset: 4px; }
+.victory--final .victory__flag { animation: none; }
+@keyframes victory-arrive { from { opacity: 0; transform: scale(.88) translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes victory-flag { 0%, 100% { transform: perspective(800px) rotateY(-8deg) rotate(-2deg); } 50% { transform: perspective(800px) rotateY(8deg) rotate(2deg); } }
+@keyframes victory-glow { from { opacity: .9; } to { opacity: 1; } }
+@media (max-width: 560px) { .victory__flag { width: 180px; margin-bottom: 30px; } .victory__slogan { font-size: clamp(30px, 8.2vw, 44px); } .victory__content { padding-inline: 6px; } .victory__official { font-size: 10px; } }
+@media (max-height: 520px) { .victory__content { padding-top: 45px; padding-bottom: 55px; } .victory__flag { width: 100px; margin-bottom: 12px; } .victory__brasil { font-size: 100px; } .victory__slogan { font-size: 38px; } .victory__official { bottom: 10px; } }
+
 .meta-line { margin: 18px 0 0; text-align: center; color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
 
 .footer { border-top: 1px solid var(--border); padding: 22px 0 34px; color: var(--muted); font-size: 13px; }

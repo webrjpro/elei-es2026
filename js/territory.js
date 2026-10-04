@@ -15,10 +15,17 @@
     ['sp', 'São Paulo'], ['se', 'Sergipe'], ['to', 'Tocantins']
   ];
   const COLORS = ['#4f8cff', '#ff5d73', '#21c79b', '#f5b83d', '#a77bff', '#26c6e8'];
+  const REGIONS = [
+    { id: 'norte', name: 'Norte', ufs: ['ac', 'ap', 'am', 'pa', 'ro', 'rr', 'to'] },
+    { id: 'nordeste', name: 'Nordeste', ufs: ['al', 'ba', 'ce', 'ma', 'pb', 'pe', 'pi', 'rn', 'se'] },
+    { id: 'centro-oeste', name: 'Centro-Oeste', ufs: ['df', 'go', 'mt', 'ms'] },
+    { id: 'sudeste', name: 'Sudeste', ufs: ['es', 'mg', 'rj', 'sp'] },
+    { id: 'sul', name: 'Sul', ufs: ['pr', 'rs', 'sc'] }
+  ];
   const store = createStore('territorial');
   const entries = new Map();
   const rio = new Map();
-  let grid, summary, filter, order, timer, busy = false, mounted = false;
+  let grid, summary, filter, region, order, timer, busy = false, mounted = false;
 
   function section(title, subtitle, id) {
     return h('section', { class: 'territory-section', 'aria-labelledby': id },
@@ -79,9 +86,19 @@
       ? (b[1].last ? b[1].last.secoes.pct : -1) - (a[1].last ? a[1].last.secoes.pct : -1)
       : a[1].name.localeCompare(b[1].name, 'pt-BR'));
     for (const [uf, entry] of sorted) {
-      entry.el.hidden = filter.value !== 'todos' && filter.value !== uf;
+      entry.el.hidden = (filter.value !== 'todos' && filter.value !== uf) ||
+        (region.value !== 'todas' && region.value !== entry.region);
       grid.appendChild(entry.el);
     }
+  }
+
+  function updateStateOptions() {
+    const selected = filter.value;
+    const available = [...entries.entries()].filter(([, entry]) => region.value === 'todas' || entry.region === region.value);
+    filter.replaceChildren(h('option', { value: 'todos' }, region.value === 'todas'
+      ? 'Todos os estados e DF' : 'Todas as UFs da região'));
+    available.forEach(([uf, entry]) => filter.appendChild(h('option', { value: uf }, entry.name)));
+    filter.value = available.some(([uf]) => uf === selected) ? selected : 'todos';
   }
 
   function updateSummary() {
@@ -147,6 +164,8 @@
     const president = C.corridas.find(r => r.id === 'presidente');
     if (president) {
       const br = section('Presidente · apuração por estado', '26 estados e Distrito Federal. Barras: votos válidos dos três mais votados em cada UF.', 'territory-br-title');
+      region = h('select', { id: 'territory-region' }, h('option', { value: 'todas' }, 'Todas as regiões'),
+        ...REGIONS.map(r => h('option', { value: r.id }, r.name)));
       filter = h('select', { id: 'territory-state' }, h('option', { value: 'todos' }, 'Todos os estados e DF'));
       order = h('select', { id: 'territory-order' }, h('option', { value: 'nome' }, 'Nome do estado'),
         h('option', { value: 'apuracao' }, 'Maior percentual apurado'));
@@ -156,6 +175,7 @@
         const race = { ...president, id: `presidente-${uf}`, uf };
         const entry = card(`${name} · ${uf.toUpperCase()}`, race);
         entry.name = name;
+        entry.region = REGIONS.find(r => r.ufs.includes(uf)).id;
         entries.set(uf, entry);
         filter.appendChild(h('option', { value: uf }, name));
         grid.appendChild(entry.el);
@@ -163,11 +183,13 @@
         if (validCache(saved, race)) render(entry, saved, true);
       }
       br.append(h('div', { class: 'territory-controls' },
+        h('label', { for: 'territory-region' }, 'Região', region),
         h('label', { for: 'territory-state' }, 'Estado', filter),
         h('label', { for: 'territory-order' }, 'Ordenar por', order)), summary,
         h('p', { class: 'territory-section__subtitle' }, 'Seções totalizadas indicam o avanço da apuração informado pelo TSE. Dados de cada UF podem ter horários diferentes.'), grid);
       container.appendChild(br);
       filter.addEventListener('change', applyFilters);
+      region.addEventListener('change', () => { updateStateOptions(); applyFilters(); });
       order.addEventListener('change', applyFilters);
       applyFilters();
     }

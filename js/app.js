@@ -137,6 +137,10 @@
     }
     rs.olderCount = 0;
 
+    // Só verifica a vitória depois de uma leitura oficial válida e aceita.
+    // O cache local, a liderança e resultados estaduais não acionam a celebração.
+    if (NS.Victory && (!last || !last.ts || data.ts >= last.ts)) NS.Victory.sync(rs.race, data);
+
     if (last && last.idg === data.idg && last.ts === data.ts) return; // nada mudou
 
     if (data.contando) pushHistory(rs, data);

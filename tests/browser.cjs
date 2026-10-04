@@ -82,6 +82,27 @@ async function main() {
     await page.selectOption('#territory-state', 'rj');
     assert.equal(await page.locator('.territory-grid .territory-card:visible').count(), 1);
     await page.selectOption('#territory-state', 'todos');
+    for (const [region, expected] of [
+      ['norte', ['ac', 'ap', 'am', 'pa', 'ro', 'rr', 'to']],
+      ['nordeste', ['al', 'ba', 'ce', 'ma', 'pb', 'pe', 'pi', 'rn', 'se']],
+      ['centro-oeste', ['df', 'go', 'mt', 'ms']],
+      ['sudeste', ['es', 'mg', 'rj', 'sp']], ['sul', ['pr', 'rs', 'sc']]
+    ]) {
+      await page.selectOption('#territory-region', region);
+      const actual = await page.locator('.territory-grid .territory-card:visible a').evaluateAll(els =>
+        els.map(el => /\/([a-z]{2})-c0001/.exec(el.href)[1]).sort());
+      assert.deepEqual(actual, expected.slice().sort(), `Correct UFs for ${region}`);
+      assert.equal(await page.locator('#territory-state option').count(), expected.length + 1);
+    }
+    await page.selectOption('#territory-region', 'sudeste');
+    await page.selectOption('#territory-state', 'rj');
+    assert.equal(await page.locator('.territory-grid .territory-card:visible').count(), 1, 'Region plus state filter');
+    await page.selectOption('#territory-region', 'nordeste');
+    assert.equal(await page.locator('#territory-state').inputValue(), 'todos', 'Changing region resets an incompatible state');
+    assert.equal(await page.locator('.territory-grid .territory-card:visible').count(), 9);
+    await page.selectOption('#territory-region', 'todas');
+    assert.equal(await page.locator('.territory-grid .territory-card:visible').count(), 27);
+    console.log('PASS: all five regions, exact UF membership, combined region/state filters and reset');
     await page.selectOption('#territory-order', 'apuracao');
     const percentages = await page.locator('.territory-grid [role="progressbar"]').evaluateAll(els => els.map(el => Number(el.getAttribute('aria-valuenow'))));
     assert(percentages.every((pct, i) => i === 0 || percentages[i - 1] >= pct), 'Sort by counting progress');
@@ -93,14 +114,20 @@ async function main() {
     }
     await page.screenshot({ path: path.join(os.tmpdir(), 'apuracao-mobile.png'), fullPage: true });
     console.log('PASS: official values, 27 UFs, both RJ races, placement, filters, sorting, desktop and mobile');
+    async function waitForRequests(minimum) {
+      for (let attempt = 0; attempt < 40 && requests < minimum; attempt++) await page.waitForTimeout(250);
+      assert(requests >= minimum, 'Expected requests completed within ten seconds');
+      // Await the whole queue rather than checking an already-visible summary.
+      await page.evaluate(() => window.Apuracao.Territory.refresh());
+      await page.waitForTimeout(250);
+    }
     const beforeAuto = requests;
     await page.clock.fastForward(61000);
-    await page.waitForFunction(() => document.querySelector('.territory-summary')?.textContent.includes('27 atualizadas'));
-    await page.waitForTimeout(100);
+    await waitForRequests(beforeAuto + 27);
     assert(requests >= beforeAuto + 27, 'Automatic state refresh after one minute');
     const beforeManual = requests;
     await page.click('#refresh');
-    await page.waitForTimeout(100);
+    await waitForRequests(beforeManual + 27);
     assert(requests >= beforeManual + 27, 'Refresh button also updates state charts');
     console.log('PASS: automatic and manual refresh');
     const text = await page.locator('.territory-grid .territory-bars').allTextContents();
