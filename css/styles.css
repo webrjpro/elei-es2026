@@ -404,6 +404,8 @@ a:hover { color: #b9d1ff; }
 
 .footer { border-top: 1px solid var(--border); padding: 22px 0 34px; color: var(--muted); font-size: 13px; }
 .footer p { margin: 0 0 6px; max-width: 900px; }
+.footer__author { font-size: 14px; color: var(--text-2); margin-bottom: 10px !important; }
+.footer__author strong { color: #fff; font-weight: 700; }
 .footer__small { font-size: 12px; opacity: .85; }
 
 .noscript { padding: 16px; text-align: center; background: var(--warn); color: #111; }
