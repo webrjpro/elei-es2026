@@ -19,11 +19,8 @@
   }
   const { U, TSE, UI, createStore } = NS;
 
-  const params = new URLSearchParams(global.location.search);
-  const DEMO = params.has('demo');
   const START = Date.parse(C.inicioDivulgacao) || 0;
-  const DEMO_T0 = Date.now();
-  const store = createStore(DEMO ? 'demo' : 'oficial');
+  const store = createStore('oficial');
   const HISTORY_MAX = 400;
 
   const state = {
@@ -41,7 +38,6 @@
   function init() {
     const brand = document.querySelector('#turno-label');
     if (brand && C.rotuloTurno) brand.textContent = C.rotuloTurno;
-    if (DEMO) document.querySelector('#demo-banner').hidden = false;
 
     UI.mount(document.querySelector('#races'), C.corridas);
 
@@ -72,7 +68,6 @@
   /* ----------------------------------------------------------- Ciclo */
 
   function baseInterval() {
-    if (DEMO) return 4000;
     return Date.now() < START - 5 * 60000 ? C.intervaloPreMs : C.intervaloMs;
   }
 
@@ -108,7 +103,6 @@
       const { raw, via } = await TSE.load(race);
       state.via = via;
       let data = TSE.normalize(raw, race);
-      if (DEMO) data = TSE.simulate(data, race, DEMO_T0);
       apply(rs, data);
       rs.failCount = 0;
       rs.ok = true;
@@ -137,7 +131,7 @@
     }
     rs.olderCount = 0;
 
-    if (last && last.idg === data.idg && last.ts === data.ts && !DEMO) return; // nada mudou
+    if (last && last.idg === data.idg && last.ts === data.ts) return; // nada mudou
 
     if (data.contando) pushHistory(rs, data);
     rs.last = data;
@@ -174,12 +168,12 @@
       UI.setOffline(false);
       if (okCount < results.length) UI.setStatus('unstable', 'Conexão instável');
       else if (all.every((r) => r.last && r.last.finalizada)) UI.setStatus('final', 'Totalização finalizada');
-      else if (!DEMO && now < START && !all.some((r) => r.last && r.last.contando)) UI.setStatus('waiting', 'Aguardando início');
+      else if (now < START && !all.some((r) => r.last && r.last.contando)) UI.setStatus('waiting', 'Aguardando início');
       else UI.setStatus('live', 'Ao vivo');
     }
 
     const viaTxt = state.via === 'proxy' ? 'cache próprio (proxy)' : 'TSE (direto)';
-    UI.setMeta(`Última verificação: ${U.brTime(now)} · Fonte: ${viaTxt}${DEMO ? ' · SIMULAÇÃO' : ''}`);
+    UI.setMeta(`Última verificação: ${U.brTime(now)} · Fonte oficial: ${viaTxt}`);
   }
 
   /* ----------------------------------------------- Relógio e eventos */
@@ -188,7 +182,7 @@
 
   function tick() {
     const now = Date.now();
-    const left = DEMO ? 0 : START - now;
+    const left = START - now;
     UI.setCountdown(left);
 
     const active = left > 0;

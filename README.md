@@ -32,17 +32,14 @@ O CDN do TSE libera CORS, então o navegador lê os arquivos diretamente.
 2. GitHub → **Settings → Pages → Build and deployment → Source: Deploy from a branch → `main` / `/ (root)`** → Save.
 3. Em ~1 minuto o site fica em `https://<usuario>.github.io/<repositorio>/`.
 
-## Testar antes das 17h
+## Rigor e Dados Oficiais
 
-Abra com `?demo=1` no final do endereço:
+Este projeto **não utiliza dados fictícios ou inventados**. Todo o fluxo é estritamente vinculado aos arquivos públicos e oficiais de totalização disponibilizados pela Justiça Eleitoral (`resultados.tse.jus.br`).
 
-```
-https://<usuario>.github.io/<repositorio>/?demo=1
-```
+- **Antes das 17h:** Exibe a contagem regressiva oficial até a abertura da totalização e a lista oficial de candidatos deferidos/concorrentes obtida diretamente do TSE.
+- **A partir das 17h:** Conforme as urnas são totalizadas pelos TREs e TSE, os números reais são consumidos e a tela atualiza as porcentagens, contagem de votos e ordenação dos mais votados no topo.
 
-Usa a **lista real de candidatos** do TSE com **números fictícios** que avançam de 0 a 100% em 3 minutos (com faixa roxa "Modo simulação"). O modo simulação usa armazenamento separado e nunca mistura com os dados oficiais.
-
-Para rodar no computador: `python -m http.server 8080` na pasta e abra `http://localhost:8080`.
+Para rodar localmente no computador: execute `python -m http.server 8080` na pasta do projeto e acesse `http://localhost:8080`.
 
 ## Como funciona (resiliência)
 

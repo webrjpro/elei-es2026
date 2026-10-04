@@ -141,7 +141,6 @@ a:hover { color: #b9d1ff; }
 .banner { font-size: 14px; border-bottom: 1px solid var(--border); }
 .banner .wrap { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding-top: 10px; padding-bottom: 10px; }
 .banner--warn { background: rgba(245, 184, 61, 0.12); color: #ffe7b3; border-color: rgba(245, 184, 61, 0.3); }
-.banner--demo { background: rgba(167, 123, 255, 0.14); color: #e5d9ff; border-color: rgba(167, 123, 255, 0.3); }
 .banner a { color: inherit; font-weight: 600; }
 
 /* ------------------------------------------------------------ Countdown */

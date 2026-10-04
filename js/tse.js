@@ -156,55 +156,5 @@
     };
   }
 
-  /* --------------------------------------------- Simulação (?demo=1) */
-
-  /**
-   * Gera números fictícios crescentes sobre a lista REAL de candidatos.
-   * Serve apenas para testar o visual antes das 17h. Nunca é usado sem "?demo" na URL.
-   */
-  function simulate(data, race, startedAt) {
-    const DURATION = 180000; // 0 → 100% em 3 minutos
-    const p = U.clamp(0.03 + (Date.now() - startedAt) / DURATION, 0, 1);
-    const weights = data.candidatos.map((c) => {
-      const h = U.hash(c.sq + race.id);
-      const base = Math.pow((h % 1000) / 1000, 3) * 100 + 0.6;
-      const wobble = 1 + 0.22 * Math.sin(p * 7 + (h % 13));
-      return base * wobble;
-    });
-    const sumW = weights.reduce((a, b) => a + b, 0) || 1;
-    const eleitores = data.eleitores || 10000000;
-    const validos = Math.round(eleitores * 0.79 * 0.9 * p) * data.vagas;
-
-    const candidatos = data.candidatos.map((c, i) => {
-      const pct = (weights[i] / sumW) * 100;
-      return Object.assign({}, c, { pct, votos: Math.round((validos * weights[i]) / sumW), eleito: false, situacao: '' });
-    });
-
-    const finalizada = p >= 1;
-    if (finalizada) {
-      const sorted = candidatos.slice().sort((a, b) => b.votos - a.votos);
-      if (data.vagas > 1) sorted.slice(0, data.vagas).forEach((c) => { c.eleito = true; c.situacao = 'Eleito'; });
-      else if (sorted[0].pct > 50) { sorted[0].eleito = true; sorted[0].situacao = 'Eleito'; }
-      else sorted.slice(0, 2).forEach((c) => { c.situacao = '2º turno'; });
-    }
-
-    const now = new Date();
-    const hg = U.brTime(now.getTime());
-    return Object.assign({}, data, {
-      ts: now.getTime(),
-      hg,
-      idg: String(now.getTime()),
-      finalizada,
-      contando: true,
-      secoes: { total: data.secoes.total, totalizadas: Math.round(data.secoes.total * p), pct: p * 100 },
-      comparecimentoPct: 79.1 * Math.min(1, p * 1.2),
-      abstencaoPct: 100 - 79.1 * Math.min(1, p * 1.2),
-      brancosPct: 3.4,
-      nulosPct: 5.2,
-      validos,
-      candidatos
-    });
-  }
-
-  NS.TSE = { resultUrl, photoUrl, load, normalize, simulate, TseError };
+  NS.TSE = { resultUrl, photoUrl, load, normalize, TseError };
 })(window);
