@@ -1,0 +1,90 @@
+# Apuração 2026 — ao vivo
+
+Painel de apuração em tempo real das **Eleições 2026** com os **mais votados** para:
+
+- **Presidente** (Brasil)
+- **Governador** do Rio de Janeiro
+- **Senador** pelo Rio de Janeiro
+
+Fotos, partido, número, votos, % de votos válidos, % de seções totalizadas, comparecimento, abstenção, brancos, nulos, marcação de **Eleito / 2º turno** e gráfico de evolução — tudo atualizado sozinho, sem recarregar a página.
+
+100% estático (HTML + CSS + JavaScript puro, sem dependências). Roda no **GitHub Pages**.
+
+---
+
+## Fonte dos dados (oficial, verificada)
+
+Arquivos públicos de divulgação do TSE — `https://resultados.tse.jus.br/oficial` — no leiaute **EA20 (resultado unificado, `-u.json`)**:
+
+| Disputa     | Arquivo                                                            |
+|-------------|--------------------------------------------------------------------|
+| Presidente  | `/oficial/ele2026/6257/dados/br/br-c0001-e006257-u.json`           |
+| Governador  | `/oficial/ele2026/6259/dados/rj/rj-c0003-e006259-u.json`           |
+| Senador     | `/oficial/ele2026/6259/dados/rj/rj-c0005-e006259-u.json`           |
+| Fotos       | `/oficial/ele2026/<eleição>/fotos/<uf>/<sqcand>.jpeg`              |
+
+Códigos confirmados em `/oficial/comum/config/ele-c.json` (pleito 3220, eleições 6257 e 6259).
+O CDN do TSE libera CORS, então o navegador lê os arquivos diretamente.
+
+## Publicar no GitHub Pages
+
+1. Envie os arquivos para o repositório (branch `main`).
+2. GitHub → **Settings → Pages → Build and deployment → Source: Deploy from a branch → `main` / `/ (root)`** → Save.
+3. Em ~1 minuto o site fica em `https://<usuario>.github.io/<repositorio>/`.
+
+## Testar antes das 17h
+
+Abra com `?demo=1` no final do endereço:
+
+```
+https://<usuario>.github.io/<repositorio>/?demo=1
+```
+
+Usa a **lista real de candidatos** do TSE com **números fictícios** que avançam de 0 a 100% em 3 minutos (com faixa roxa "Modo simulação"). O modo simulação usa armazenamento separado e nunca mistura com os dados oficiais.
+
+Para rodar no computador: `python -m http.server 8080` na pasta e abra `http://localhost:8080`.
+
+## Como funciona (resiliência)
+
+- **Nunca zera a tela**: o último dado oficial válido fica em memória e no `localStorage`; ao reabrir a página ele aparece na hora.
+- **Validação**: cada arquivo é conferido (eleição, abrangência, cargo, candidatos, totais). Arquivo inválido é descartado e o anterior permanece.
+- **Anti‑regressão**: se um nó do CDN entregar um arquivo mais antigo que o já exibido, ele é ignorado.
+- **Eficiente**: consulta a cada 15 s com revalidação por `ETag`/`Last-Modified` (só baixa quando mudou), *jitter* para não sincronizar visitantes, pausa com a aba oculta, retomada imediata ao voltar ou reconectar.
+- **Falhas**: *backoff* exponencial (até 2 min); faixa "Último dado oficial recebido … Tentando obter novos dados…"; 404 espera 5 min (o TSE bloqueia IP com muitos 404).
+- **17h automático**: contagem regressiva vira painel de apuração sozinha.
+- **Segurança**: CSP restritiva, nenhum `innerHTML` (imune a XSS por dados externos), nenhum script de terceiros.
+- Limite do TSE: 100 req/s por IP. Cada visitante faz ~0,2 req/s, do próprio IP.
+
+## Muito tráfego? Ative o proxy/cache (opcional, grátis)
+
+`worker/cloudflare-worker.js` é um proxy com cache de borda de 10 s, restrito aos JSON oficiais do TSE.
+Publique no Cloudflare Workers e preencha em `js/config.js`:
+
+```js
+proxy: 'https://SEU-WORKER.workers.dev/?url=',
+proxyPrimeiro: true,
+```
+
+Sem proxy, o site já funciona; com proxy, ele também vira rota alternativa automática.
+
+## 2º turno (25/10/2026)
+
+Em `js/config.js`: troque `eleicao` para **6258** (Presidente) e **6260** (Governador), ajuste `inicioDivulgacao`, `rotuloTurno` e remova a linha do Senador.
+
+## Estrutura
+
+```
+index.html
+css/styles.css
+js/config.js   ← único arquivo de configuração
+js/core.js     utilitários + localStorage resiliente
+js/tse.js      URLs, download, validação, modelo, simulação
+js/ui.js       renderização incremental, animações, gráfico
+js/app.js      ciclo de consulta, estado, tolerância a falhas
+worker/cloudflare-worker.js  proxy/cache opcional
+```
+
+## Aviso
+
+Projeto independente, sem vínculo com o TSE. Em caso de divergência, prevalece o resultado oficial em [resultados.tse.jus.br](https://resultados.tse.jus.br).
+A verificação criptográfica das assinaturas JWS dos arquivos não é feita no navegador; os dados são lidos via HTTPS do domínio oficial do TSE.
