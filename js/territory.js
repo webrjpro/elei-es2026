@@ -193,16 +193,6 @@
       order.addEventListener('change', applyFilters);
       applyFilters();
     }
-    const rioGrid = h('div', { class: 'territory-rio' });
-    for (const race of C.corridas.filter(r => r.uf === 'rj')) {
-      const sec = section(`${race.titulo} · estado do Rio de Janeiro`, 'Votos válidos por candidato e avanço da apuração no estado inteiro.', `territory-${race.id}-title`);
-      const entry = card('Rio de Janeiro · RJ', race);
-      entry.showAll = true;
-      rio.set(race.id, entry);
-      sec.appendChild(entry.el);
-      rioGrid.appendChild(sec);
-    }
-    container.appendChild(rioGrid);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') clearTimeout(timer);
       else refresh();
@@ -214,8 +204,7 @@
   }
 
   function updateRace(race, data, stale) {
-    const entry = rio.get(race.id);
-    if (entry) render(entry, data, stale);
+    /* Mantido para compatibilidade sem duplicar os cards do RJ */
   }
 
   NS.Territory = { mount, refresh, updateRace };

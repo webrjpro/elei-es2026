@@ -32,6 +32,7 @@
   <script src="js/core.js" defer></script>
   <script src="js/tse.js" defer></script>
   <script src="js/ui.js" defer></script>
+  <script src="js/macro.js" defer></script>
   <script src="js/territory.js" defer></script>
   <script src="js/victory.js" defer></script>
   <script src="js/app.js" defer></script>
@@ -85,6 +86,19 @@
     </section>
 
     <div id="races" class="races" aria-live="off"></div>
+
+    <section class="macro" id="macro-section" aria-labelledby="macro-title" hidden>
+      <div class="macro__header">
+        <p class="macro__eyebrow">Panorama Nacional · 27 Unidades da Federação</p>
+        <h2 class="macro__title" id="macro-title">Balanço Macropolítico: PL vs PT e Forças Ideológicas</h2>
+        <p class="macro__subtitle">Apuração contínua dos dados oficiais do TSE totalizando governadores e senadores em todas as 27 UFs.</p>
+      </div>
+      <div class="macro__grid">
+        <div class="macro-card" id="card-macro-gov"></div>
+        <div class="macro-card" id="card-macro-sen"></div>
+        <div class="macro-card" id="card-macro-ideology"></div>
+      </div>
+    </section>
 
     <div id="territorial-charts" class="territorial" aria-live="off"></div>
 

@@ -391,6 +391,342 @@ a:hover { color: #b9d1ff; }
 .chart__line { fill: none; stroke-width: 2.25; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .chart__dot { stroke: var(--surface-solid); stroke-width: 2; vector-effect: non-scaling-stroke; }
 
+/* ------------------------------------------- Probabilidade de Vitória */
+
+.prob {
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(14, 22, 38, 0.7);
+  border: 1px solid rgba(79, 140, 255, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.prob__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.prob__badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.12);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+.prob__tag {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.prob__bars {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.prob-bar {
+  display: grid;
+  gap: 5px;
+}
+.prob-bar__info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12.5px;
+}
+.prob-bar__label {
+  color: var(--text-2);
+  font-weight: 500;
+}
+.prob-bar__val {
+  font-size: 14px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.color-t1 { color: #21c79b; }
+.color-t2 { color: #f5b83d; }
+.prob-bar__track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.14);
+  overflow: hidden;
+}
+.prob-bar__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.8s var(--ease);
+}
+.fill-t1 {
+  background: linear-gradient(90deg, #10b981, #21c79b);
+  box-shadow: 0 0 12px rgba(33, 199, 155, 0.4);
+}
+.fill-t2 {
+  background: linear-gradient(90deg, #d97706, #f5b83d);
+  box-shadow: 0 0 12px rgba(245, 184, 61, 0.4);
+}
+.prob__proj {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.4;
+}
+.prob__det {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+/* Senado RJ Projeção */
+.prob__sen-list {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.prob__sen-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 2fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+}
+.prob__sen-item.is-in {
+  border-color: rgba(33, 199, 155, 0.3);
+  background: rgba(33, 199, 155, 0.04);
+}
+.prob__sen-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.prob__sen-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.14);
+  overflow: hidden;
+}
+.prob__sen-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #4f8cff, #21c79b);
+  transition: width 0.8s var(--ease);
+}
+.prob__sen-pct {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: #7ff0cc;
+}
+.prob__sen-item.is-out .prob__sen-pct {
+  color: var(--muted);
+}
+.prob__sen-item.is-out .prob__sen-fill {
+  background: #64748b;
+}
+
+/* ----------------------------------------- Balanço Macropolítico */
+
+.macro {
+  margin-top: 28px;
+  padding: clamp(20px, 3vw, 28px);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.macro__header {
+  margin-bottom: 22px;
+}
+.macro__eyebrow {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.macro__title {
+  margin: 0 0 8px;
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+.macro__subtitle {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+.macro__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+@media (max-width: 1024px) {
+  .macro__grid {
+    grid-template-columns: 1fr;
+  }
+}
+.macro-card {
+  padding: 18px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.macro-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.macro-card__head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.macro-card__total {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.macro-bars {
+  display: grid;
+  gap: 12px;
+}
+.macro-bar {
+  display: grid;
+  gap: 5px;
+}
+.macro-bar__label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.macro-bar__label span {
+  color: var(--text-2);
+}
+.macro-bar__label strong {
+  font-variant-numeric: tabular-nums;
+}
+.color-pl { color: #3b82f6; }
+.color-pt { color: #ef4444; }
+.macro-bar__track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  overflow: hidden;
+}
+.macro-bar__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.8s var(--ease);
+}
+.fill-pl {
+  background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+}
+.fill-pt {
+  background: linear-gradient(90deg, #b91c1c, #ef4444);
+}
+.fill-outros {
+  background: linear-gradient(90deg, #475569, #94a3b8);
+}
+.macro-chips {
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.macro-chip {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  line-height: 1.4;
+}
+.macro-chip span {
+  color: var(--muted);
+  font-weight: 500;
+}
+.macro-chip strong {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.macro-chip--pl { border-color: rgba(59, 130, 246, 0.3); }
+.macro-chip--pt { border-color: rgba(239, 68, 68, 0.3); }
+.macro-note {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+.ideol-grid {
+  display: grid;
+  gap: 16px;
+}
+.ideol-col h4 {
+  margin: 0 0 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.ideol-stack {
+  display: flex;
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(148, 163, 184, 0.12);
+  margin-bottom: 8px;
+}
+.ideol-seg {
+  height: 100%;
+  transition: width 0.8s var(--ease);
+}
+.fill-dir { background: #3b82f6; }
+.fill-cen { background: #eab308; }
+.fill-esq { background: #ef4444; }
+.ideol-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.ideol-leg-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-dir { background: #3b82f6; }
+.dot-cen { background: #eab308; }
+.dot-esq { background: #ef4444; }
+
 /* --------------------------------------------------------------- Stats */
 
 .territorial { display: grid; gap: 24px; margin-top: 28px; }
@@ -403,7 +739,6 @@ a:hover { color: #b9d1ff; }
 .territory-controls select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .territory-summary { color: var(--muted); font-size: 12px; margin: 12px 0; }
 .territory-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.territory-rio { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
 .territory-card { padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: rgba(0, 0, 0, .14); min-width: 0; }
 .territory-card__head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
 .territory-card__head h3 { font-size: 15px; margin: 0 0 12px; }
@@ -420,11 +755,10 @@ a:hover { color: #b9d1ff; }
 .territory-bar__label strong { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .territory-bar__fill { display: block; height: 100%; border-radius: inherit; transition: width .5s; }
 .territory-bar small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
-.territory-rio .territory-card { margin-top: 16px; }
 .territory-card.is-stale .territory-bars, .territory-card.is-stale .territory-card__track { opacity: .65; }
 @media (max-width: 1000px) { .territory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) {
-  .territory-grid, .territory-rio { grid-template-columns: 1fr; }
+  .territory-grid { grid-template-columns: 1fr; }
   .territory-controls label { max-width: none; }
 }
 

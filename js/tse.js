@@ -147,9 +147,13 @@
         pct: U.clamp(U.num(s.pstn !== undefined && s.pstn !== '' ? s.pstn : s.pst), 0, 100)
       },
       eleitores: U.int(e.te),
+      comparecimento: U.int(e.c),
       comparecimentoPct: U.num(e.pcn || e.pc),
+      abstencao: U.int(e.a),
       abstencaoPct: U.num(e.pan || e.pa),
+      brancos: U.int(v.vb),
       brancosPct: U.num(v.pvbn || v.pvb),
+      nulos: U.int(v.vn),
       nulosPct: U.num(v.ptvnn || v.ptvn),
       validos: U.int(v.vv),
       candidatos

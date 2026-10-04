@@ -75,18 +75,29 @@ Sem proxy, o site já funciona; com proxy, ele também vira rota alternativa aut
 
 Em `js/config.js`: troque `eleicao` para **6258** (Presidente) e **6260** (Governador), ajuste `inicioDivulgacao`, `rotuloTurno` e remova a linha do Senador.
 
+## Recursos Avançados de Análise
+
+- **Probabilidade de Vitória em Tempo Real (1º vs 2º Turno):** Análise matemática contínua (CDF da Normal com função erro de Gauss) integrando os dados oficiais de comparecimento (`e.c`) e eleitorado total (`e.te`) do TSE. Calcula exatamente quantos votos faltam para atingir a meta constitucional de 50%+1 dos votos válidos, os votos restantes e a probabilidade percentual de encerramento em 1º turno ou disputa em 2º turno.
+- **Projeção para o Senado RJ:** Cálculo probabilístico contínuo para a conquista das duas vagas em disputa com base no avanço das seções e margem sobre os concorrentes.
+- **Balanço Macropolítico dos 27 Estados (Oficial TSE):**
+  - **Governadores: PL vs PT:** Comparativo de estados liderados em todo o território nacional.
+  - **Senado Federal: PL vs PT:** Comparativo das 54 vagas em disputa (duas vagas por UF).
+  - **Domínio Ideológico Nacional:** Gráfico stacked e legendas computando a proporção de forças entre Direita, Centro e Esquerda para Governadorias e Senado.
+- **Desenvolvido por Carlos Antonio de Oliveira Piquet** (créditos no rodapé e metadados Open Graph).
+
 ## Estrutura
 
 ```
 index.html
 css/styles.css
-js/config.js   ← único arquivo de configuração
-js/core.js     utilitários + localStorage resiliente
-js/tse.js      URLs, download, validação e modelo oficial
-js/ui.js       renderização incremental, animações, gráfico
-js/territory.js gráficos oficiais por UF e estado do RJ
-js/victory.js   celebração após confirmação oficial de vitória
-js/app.js      ciclo de consulta, estado, tolerância a falhas
+js/config.js     ← único arquivo de configuração
+js/core.js       matemática estatística (probabilidade Gauss), utilitários + store
+js/tse.js        URLs, download, validação e extração oficial TSE (eleitores/urnas)
+js/ui.js         renderização incremental, FLIP reordenação, probabilidade e macro
+js/macro.js      agregação nacional (PL vs PT e ideologia nas 27 UFs)
+js/territory.js  gráficos oficiais por UF para Presidente
+js/victory.js    celebração após confirmação oficial de vitória
+js/app.js        ciclo de consulta, estado, tolerância a falhas
 worker/cloudflare-worker.js  proxy/cache opcional
 ```
 

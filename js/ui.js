@@ -57,6 +57,13 @@
     const sBran = stat('Brancos');
     const sNulo = stat('Nulos');
 
+    const probHead = h('div', { class: 'prob__head' },
+      h('span', { class: 'prob__badge' }, 'PROBABILIDADE DE VITÓRIA'),
+      h('span', { class: 'prob__tag' }, 'Análise Contínua')
+    );
+    const probBody = h('div', { class: 'prob__body' });
+    const probBox = h('div', { class: 'prob', hidden: true }, probHead, probBody);
+
     const el = h('section', { class: `race race--${race.id} is-loading`, 'aria-labelledby': titleId },
       h('header', { class: 'race__head' },
         h('div', { class: 'race__titles' },
@@ -68,6 +75,7 @@
         h('div', { class: 'progress__row' }, h('span', { class: 'progress__label' }, 'Seções totalizadas'), pctEl),
         h('div', { class: 'progress__track' }, bar),
         countEl),
+      probBox,
       alert,
       list,
       h('div', { class: 'skeleton', 'aria-hidden': 'true' }, h('span'), h('span'), h('span')),
@@ -75,7 +83,7 @@
       h('dl', { class: 'stats' }, sComp.node, sAbst.node, sBran.node, sNulo.node));
 
     return {
-      race, el, list, pctEl, countEl, bar, updated, finalBadge, alert, chartWrap, chartSvg,
+      race, el, list, pctEl, countEl, bar, updated, finalBadge, alert, chartWrap, chartSvg, probBox, probBody,
       stats: { comp: sComp.dd, abst: sAbst.dd, bran: sBran.dd, nulo: sNulo.dd },
       rows: new Map(), colors: new Map(), mode: null, vPct: 0, last: null
     };
@@ -316,6 +324,7 @@
       : null;
 
     renderRows(p, list, counting, prevMap);
+    renderProbability(p, data, history);
 
     p.stats.comp.textContent = counting ? U.fmtPct(data.comparecimentoPct) : '—';
     p.stats.abst.textContent = counting ? U.fmtPct(data.abstencaoPct) : '—';
@@ -324,6 +333,195 @@
 
     renderChart(p, counting ? history : null, list);
     p.last = data;
+  }
+
+  function renderProbability(p, data, history) {
+    const prob = U.calcProbability(p.race, data, history);
+    if (!prob || !prob.disponivel) {
+      p.probBox.hidden = true;
+      return;
+    }
+
+    p.probBox.hidden = false;
+    p.probBody.textContent = '';
+
+    if (prob.tipo === 'turnos') {
+      const barT1 = h('div', { class: 'prob-bar prob-bar--t1' },
+        h('div', { class: 'prob-bar__info' },
+          h('span', { class: 'prob-bar__label' }, '1º Turno (Vitória Direta)'),
+          h('strong', { class: 'prob-bar__val color-t1' }, `${U.fmtPctPlain(prob.probTurno1)}%`)
+        ),
+        h('div', { class: 'prob-bar__track' },
+          h('span', { class: 'prob-bar__fill fill-t1', style: `width: ${prob.probTurno1}%` })
+        )
+      );
+
+      const barT2 = h('div', { class: 'prob-bar prob-bar--t2' },
+        h('div', { class: 'prob-bar__info' },
+          h('span', { class: 'prob-bar__label' }, '2º Turno (Confronto)'),
+          h('strong', { class: 'prob-bar__val color-t2' }, `${U.fmtPctPlain(prob.probTurno2)}%`)
+        ),
+        h('div', { class: 'prob-bar__track' },
+          h('span', { class: 'prob-bar__fill fill-t2', style: `width: ${prob.probTurno2}%` })
+        )
+      );
+
+      const proj = h('p', { class: 'prob__proj' }, prob.projecao);
+      const det = h('p', { class: 'prob__det' }, prob.detalhe);
+
+      p.probBody.appendChild(h('div', { class: 'prob__bars' }, barT1, barT2));
+      p.probBody.appendChild(proj);
+      p.probBody.appendChild(det);
+    } else if (prob.tipo === 'senador') {
+      const listEl = h('div', { class: 'prob__sen-list' });
+      prob.candidatos.forEach((cand, idx) => {
+        const item = h('div', { class: `prob__sen-item ${idx < 2 ? 'is-in' : 'is-out'}` },
+          h('span', { class: 'prob__sen-name' }, `${cand.nome}`),
+          h('div', { class: 'prob__sen-track' },
+            h('span', { class: 'prob__sen-fill', style: `width: ${cand.prob}%` })
+          ),
+          h('strong', { class: 'prob__sen-pct' }, `${U.fmtPctPlain(cand.prob)}% vaga`)
+        );
+        listEl.appendChild(item);
+      });
+
+      const proj = h('p', { class: 'prob__proj' }, prob.projecao);
+      const det = h('p', { class: 'prob__det' }, prob.detalhe);
+
+      p.probBody.appendChild(listEl);
+      p.probBody.appendChild(proj);
+      p.probBody.appendChild(det);
+    }
+  }
+
+  function renderMacroSection(macro) {
+    const el = document.querySelector('#macro-section');
+    if (!el || !macro) return;
+    el.hidden = false;
+
+    // 1. Governadores: PL vs PT
+    const govPl = macro.gov.pl.total;
+    const govPt = macro.gov.pt.total;
+    const govOutros = macro.gov.outros.total;
+    const govTotal = macro.gov.total;
+
+    const govCard = el.querySelector('#card-macro-gov');
+    if (govCard) {
+      govCard.innerHTML = '';
+      govCard.appendChild(h('div', { class: 'macro-card__head' },
+        h('h3', null, 'Governadores: PL vs PT'),
+        h('span', { class: 'macro-card__total' }, '27 Estados')
+      ));
+
+      const barsGov = h('div', { class: 'macro-bars' },
+        h('div', { class: 'macro-bar' },
+          h('div', { class: 'macro-bar__label' }, h('span', null, 'PL'), h('strong', { class: 'color-pl' }, `${govPl} estados (${U.fmtPctPlain((govPl/govTotal)*100)}%)`)),
+          h('div', { class: 'macro-bar__track' }, h('span', { class: 'macro-bar__fill fill-pl', style: `width: ${(govPl/govTotal)*100}%` }))
+        ),
+        h('div', { class: 'macro-bar' },
+          h('div', { class: 'macro-bar__label' }, h('span', null, 'PT'), h('strong', { class: 'color-pt' }, `${govPt} estados (${U.fmtPctPlain((govPt/govTotal)*100)}%)`)),
+          h('div', { class: 'macro-bar__track' }, h('span', { class: 'macro-bar__fill fill-pt', style: `width: ${(govPt/govTotal)*100}%` }))
+        ),
+        h('div', { class: 'macro-bar' },
+          h('div', { class: 'macro-bar__label' }, h('span', null, 'Outros Partidos'), h('strong', null, `${govOutros} estados (${U.fmtPctPlain((govOutros/govTotal)*100)}%)`)),
+          h('div', { class: 'macro-bar__track' }, h('span', { class: 'macro-bar__fill fill-outros', style: `width: ${(govOutros/govTotal)*100}%` }))
+        )
+      );
+
+      const listGov = h('div', { class: 'macro-chips' },
+        h('div', { class: 'macro-chip macro-chip--pl' }, h('span', null, 'Lideranças PL: '), h('strong', null, macro.gov.pl.ufs.map(u => u.uf).join(', ') || 'Nenhum')),
+        h('div', { class: 'macro-chip macro-chip--pt' }, h('span', null, 'Lideranças PT: '), h('strong', null, macro.gov.pt.ufs.map(u => u.uf).join(', ') || 'Nenhum'))
+      );
+
+      govCard.appendChild(barsGov);
+      govCard.appendChild(listGov);
+    }
+
+    // 2. Senado Federal: PL vs PT (54 Vagas)
+    const senPl = macro.sen.pl.total;
+    const senPt = macro.sen.pt.total;
+    const senOutros = macro.sen.outros.total;
+    const senTotal = macro.sen.total;
+
+    const senCard = el.querySelector('#card-macro-sen');
+    if (senCard) {
+      senCard.innerHTML = '';
+      senCard.appendChild(h('div', { class: 'macro-card__head' },
+        h('h3', null, 'Senado Federal: PL vs PT'),
+        h('span', { class: 'macro-card__total' }, '54 Vagas em Disputa')
+      ));
+
+      const barsSen = h('div', { class: 'macro-bars' },
+        h('div', { class: 'macro-bar' },
+          h('div', { class: 'macro-bar__label' }, h('span', null, 'PL'), h('strong', { class: 'color-pl' }, `${senPl} cadeiras (${U.fmtPctPlain((senPl/senTotal)*100)}%)`)),
+          h('div', { class: 'macro-bar__track' }, h('span', { class: 'macro-bar__fill fill-pl', style: `width: ${(senPl/senTotal)*100}%` }))
+        ),
+        h('div', { class: 'macro-bar' },
+          h('div', { class: 'macro-bar__label' }, h('span', null, 'PT'), h('strong', { class: 'color-pt' }, `${senPt} cadeiras (${U.fmtPctPlain((senPt/senTotal)*100)}%)`)),
+          h('div', { class: 'macro-bar__track' }, h('span', { class: 'macro-bar__fill fill-pt', style: `width: ${(senPt/senTotal)*100}%` }))
+        ),
+        h('div', { class: 'macro-bar' },
+          h('div', { class: 'macro-bar__label' }, h('span', null, 'Outros Partidos'), h('strong', null, `${senOutros} cadeiras (${U.fmtPctPlain((senOutros/senTotal)*100)}%)`)),
+          h('div', { class: 'macro-bar__track' }, h('span', { class: 'macro-bar__fill fill-outros', style: `width: ${(senOutros/senTotal)*100}%` }))
+        )
+      );
+
+      const saldo = senPl - senPt;
+      const saldotxt = saldo >= 0 ? `Saldo: PL lidera com +${saldo} cadeiras à frente do PT` : `Saldo: PT lidera com +${Math.abs(saldo)} cadeiras à frente do PL`;
+      const noteSen = h('p', { class: 'macro-note' }, saldotxt);
+
+      senCard.appendChild(barsSen);
+      senCard.appendChild(noteSen);
+    }
+
+    // 3. Domínio Ideológico Nacional: Direita x Centro x Esquerda
+    const ideolCard = el.querySelector('#card-macro-ideology');
+    if (ideolCard) {
+      ideolCard.innerHTML = '';
+      ideolCard.appendChild(h('div', { class: 'macro-card__head' },
+        h('h3', null, 'Domínio Ideológico Nacional'),
+        h('span', { class: 'macro-card__total' }, 'Direita · Centro · Esquerda')
+      ));
+
+      const govDir = macro.gov.ideologia.direita;
+      const govCen = macro.gov.ideologia.centro;
+      const govEsq = macro.gov.ideologia.esquerda;
+
+      const senDir = macro.sen.ideologia.direita;
+      const senCen = macro.sen.ideologia.centro;
+      const senEsq = macro.sen.ideologia.esquerda;
+
+      const ideolContent = h('div', { class: 'ideol-grid' },
+        h('div', { class: 'ideol-col' },
+          h('h4', null, 'Governadorias (27 Estados)'),
+          h('div', { class: 'ideol-stack' },
+            h('span', { class: 'ideol-seg fill-dir', style: `width: ${(govDir/27)*100}%`, title: `Direita: ${govDir}` }),
+            h('span', { class: 'ideol-seg fill-cen', style: `width: ${(govCen/27)*100}%`, title: `Centro: ${govCen}` }),
+            h('span', { class: 'ideol-seg fill-esq', style: `width: ${(govEsq/27)*100}%`, title: `Esquerda: ${govEsq}` })
+          ),
+          h('div', { class: 'ideol-legend' },
+            h('div', { class: 'ideol-leg-item' }, h('span', { class: 'dot dot-dir' }), `Direita: ${govDir} (${U.fmtPctPlain((govDir/27)*100)}%)`),
+            h('div', { class: 'ideol-leg-item' }, h('span', { class: 'dot dot-cen' }), `Centro: ${govCen} (${U.fmtPctPlain((govCen/27)*100)}%)`),
+            h('div', { class: 'ideol-leg-item' }, h('span', { class: 'dot dot-esq' }), `Esquerda: ${govEsq} (${U.fmtPctPlain((govEsq/27)*100)}%)`)
+          )
+        ),
+        h('div', { class: 'ideol-col' },
+          h('h4', null, 'Senado (54 Cadeiras em Disputa)'),
+          h('div', { class: 'ideol-stack' },
+            h('span', { class: 'ideol-seg fill-dir', style: `width: ${(senDir/54)*100}%`, title: `Direita: ${senDir}` }),
+            h('span', { class: 'ideol-seg fill-cen', style: `width: ${(senCen/54)*100}%`, title: `Centro: ${senCen}` }),
+            h('span', { class: 'ideol-seg fill-esq', style: `width: ${(senEsq/54)*100}%`, title: `Esquerda: ${senEsq}` })
+          ),
+          h('div', { class: 'ideol-legend' },
+            h('div', { class: 'ideol-leg-item' }, h('span', { class: 'dot dot-dir' }), `Direita: ${senDir} (${U.fmtPctPlain((senDir/54)*100)}%)`),
+            h('div', { class: 'ideol-leg-item' }, h('span', { class: 'dot dot-cen' }), `Centro: ${senCen} (${U.fmtPctPlain((senCen/54)*100)}%)`),
+            h('div', { class: 'ideol-leg-item' }, h('span', { class: 'dot dot-esq' }), `Esquerda: ${senEsq} (${U.fmtPctPlain((senEsq/54)*100)}%)`)
+          )
+        )
+      );
+
+      ideolCard.appendChild(ideolContent);
+    }
   }
 
   function setStale(id, stale, message) {
@@ -363,10 +561,10 @@
     if (el && el.textContent !== text) el.textContent = text;
   }
 
-  function setCountdown(msLeft) {
+  function setCountdown(msLeft, forceHide) {
     const el = $('#countdown');
     if (!el) return;
-    if (msLeft <= 0) {
+    if (msLeft <= 0 || forceHide) {
       if (!el.hidden) el.hidden = true;
       document.body.classList.remove('is-countdown');
       return;
@@ -382,5 +580,5 @@
     }
   }
 
-  NS.UI = { mount, update, setStale, setStatus, setOffline, setTimer, setMeta, setCountdown };
+  NS.UI = { mount, update, renderMacroSection, setStale, setStatus, setOffline, setTimer, setMeta, setCountdown };
 })(window);

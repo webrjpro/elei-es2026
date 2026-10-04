@@ -62,6 +62,11 @@
       else rs.last = null;
     }
 
+    if (NS.Macro && typeof NS.Macro.getCachedMacro === 'function') {
+      const cached = NS.Macro.getCachedMacro();
+      if (cached && UI.renderMacroSection) UI.renderMacroSection(cached);
+    }
+
     UI.setStatus('idle', 'Conectando…');
     bindEvents();
     tick();
@@ -92,6 +97,11 @@
     try {
       const results = await Promise.all(C.corridas.map((race) => pollRace(state.races.get(race.id))));
       updateGlobalStatus(results);
+      if (NS.Macro && typeof NS.Macro.loadMacro === 'function') {
+        NS.Macro.loadMacro().then((macro) => {
+          if (macro && UI.renderMacroSection) UI.renderMacroSection(macro);
+        }).catch((err) => console.warn('[apuração] macro:', err));
+      }
     } catch (err) {
       console.error('[apuração] erro inesperado no ciclo', err);
     } finally {
