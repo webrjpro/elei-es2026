@@ -20,6 +20,7 @@ window.APURACAO_CONFIG = Object.freeze({
   intervaloPreMs: 60000,   // antes do início
   intervaloMaxMs: 120000,  // teto do backoff em caso de falha
   timeoutMs: 12000,
+  intervaloTerritorialMs: 60000, // gráficos por estado: uma atualização por minuto
 
   /*
    * Proxy/cache opcional (recomendado para sites com muito tráfego).

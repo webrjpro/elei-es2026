@@ -393,6 +393,41 @@ a:hover { color: #b9d1ff; }
 
 /* --------------------------------------------------------------- Stats */
 
+.territorial { display: grid; gap: 24px; margin-top: 28px; }
+.territory-section { padding: clamp(16px, 2vw, 24px); border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); min-width: 0; }
+.territory-section__head h2 { margin: 5px 0 8px; font-size: clamp(20px, 2.4vw, 26px); letter-spacing: -.02em; }
+.territory-section__subtitle { margin: 0 0 14px; font-size: 13px; color: var(--text-2); line-height: 1.6; }
+.territory-controls { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0 12px; }
+.territory-controls label { display: grid; gap: 6px; color: var(--muted); font-size: 12px; font-weight: 600; flex: 1 1 200px; max-width: 320px; }
+.territory-controls select { width: 100%; border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; font: inherit; color: var(--text); background: var(--surface-solid); }
+.territory-controls select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.territory-summary { color: var(--muted); font-size: 12px; margin: 12px 0; }
+.territory-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.territory-rio { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.territory-card { padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: rgba(0, 0, 0, .14); min-width: 0; }
+.territory-card__head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.territory-card__head h3 { font-size: 15px; margin: 0 0 12px; }
+.territory-card__head strong { font-size: 17px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.territory-card__track, .territory-bar__track { height: 7px; border-radius: 99px; background: rgba(148, 163, 184, .14); overflow: hidden; }
+.territory-card__track > span { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #4f8cff, #21c79b); transition: width .5s; }
+.territory-card__count, .territory-card__updated, .territory-card__source { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.territory-card__count { margin: 7px 0 16px; }
+.territory-card__updated { margin: 14px 0 3px; }
+.territory-card__status { font-size: 12px; color: var(--warn); line-height: 1.5; margin: 10px 0; }
+.territory-bars { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+.territory-bar__label { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; font-size: 12px; margin-bottom: 6px; }
+.territory-bar__label span { overflow-wrap: anywhere; min-width: 0; }
+.territory-bar__label strong { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.territory-bar__fill { display: block; height: 100%; border-radius: inherit; transition: width .5s; }
+.territory-bar small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
+.territory-rio .territory-card { margin-top: 16px; }
+.territory-card.is-stale .territory-bars, .territory-card.is-stale .territory-card__track { opacity: .65; }
+@media (max-width: 1000px) { .territory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .territory-grid, .territory-rio { grid-template-columns: 1fr; }
+  .territory-controls label { max-width: none; }
+}
+
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; }
 .stat { padding: 10px 8px; border-radius: 10px; background: rgba(255, 255, 255, 0.025); border: 1px solid var(--border); text-align: center; min-width: 0; }
 .stat dt { color: var(--muted); font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

@@ -40,6 +40,7 @@
     if (brand && C.rotuloTurno) brand.textContent = C.rotuloTurno;
 
     UI.mount(document.querySelector('#races'), C.corridas);
+    if (NS.Territory) NS.Territory.mount(document.querySelector('#territorial-charts'));
 
     for (const race of C.corridas) {
       const rs = {
@@ -54,7 +55,10 @@
       if (!Array.isArray(rs.history)) rs.history = [];
       state.races.set(race.id, rs);
       // Exibe imediatamente o último dado conhecido (carregamento instantâneo e resiliência offline).
-      if (rs.last && Array.isArray(rs.last.candidatos)) UI.update(race.id, rs.last, null, rs.history);
+      if (rs.last && Array.isArray(rs.last.candidatos)) {
+        UI.update(race.id, rs.last, null, rs.history);
+        if (NS.Territory) NS.Territory.updateRace(race, rs.last, true);
+      }
       else rs.last = null;
     }
 
@@ -107,10 +111,12 @@
       rs.failCount = 0;
       rs.ok = true;
       UI.setStale(race.id, false);
+      if (NS.Territory && rs.last) NS.Territory.updateRace(race, rs.last, false);
       return true;
     } catch (err) {
       rs.failCount++;
       rs.ok = false;
+      if (NS.Territory && rs.last) NS.Territory.updateRace(race, rs.last, true);
       if (err && err.status === 404) rs.blockedUntil = Date.now() + 5 * 60000;
       console.warn(`[apuração] ${race.id}:`, err && err.message ? err.message : err);
       if (rs.last && rs.failCount >= 2) {
@@ -137,6 +143,7 @@
     rs.last = data;
     store.set(`last:${rs.race.id}`, data);
     UI.update(rs.race.id, data, last, rs.history);
+    if (NS.Territory) NS.Territory.updateRace(rs.race, data);
   }
 
   function pushHistory(rs, data) {

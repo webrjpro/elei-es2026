@@ -32,6 +32,7 @@
   <script src="js/core.js" defer></script>
   <script src="js/tse.js" defer></script>
   <script src="js/ui.js" defer></script>
+  <script src="js/territory.js" defer></script>
   <script src="js/app.js" defer></script>
 </head>
 <body>
@@ -84,13 +85,15 @@
 
     <div id="races" class="races" aria-live="off"></div>
 
+    <div id="territorial-charts" class="territorial" aria-live="off"></div>
+
     <p class="meta-line" id="meta-line" aria-live="off"></p>
   </main>
 
   <footer class="footer">
     <div class="wrap">
       <p class="footer__author">Desenvolvido por <strong>Carlos Antonio de Oliveira Piquet</strong></p>
-      <p>Fonte oficial: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener noreferrer">Tribunal Superior Eleitoral — resultados.tse.jus.br</a>. Percentuais calculados sobre os votos válidos. Exibidos apenas os mais votados de cada disputa.</p>
+      <p>Fonte oficial: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener noreferrer">Tribunal Superior Eleitoral — resultados.tse.jus.br</a>. Percentuais de candidatos sobre os votos válidos. Painéis principais e gráficos por UF exibem os mais votados; gráficos do RJ mostram todos os candidatos.</p>
       <p class="footer__small">Os números são lidos diretamente dos arquivos públicos de divulgação do TSE e validados estruturalmente antes de exibidos. Em caso de divergência, prevalece o resultado oficial do TSE.</p>
     </div>
   </footer>
